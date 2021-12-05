@@ -1,58 +1,34 @@
 import * as helper from "../helpers/advent_of_code_utils.js"
 
-var input = helper.inputToStringArray("./input_test.txt").map((value) => { return value.split("") })
-var mostCommonValue  = []
-var leastCommonValue  = []
+var input = helper.inputToStringArray("./input.txt").map((value) => { return value.split("") })
 
-findCommonValues();
+//var oxyGenRating = findRatings(mostCommonValue)
+//var scrubberRating = findRatings(leastCommonValue)
 
-var oxyGenRating = findRatings(mostCommonValue)
-var scrubberRating = findRatings(leastCommonValue)
-
-
-function findRatings(commonValue) {
-    return commonValue.map((value) => { return filterByCriteria(input, value, 0, true)
-    });
+function findOxyGenRating() {
+    return findRatings(input, 0, "findMostFrequent")
 }
 
-// recursively filter array for bitCriteria until only one entry remains
-function filterByCriteria(array, bitCriteria, index, isNotFinished) {
-    if (isNotFinished) {
-        // filter array for all values wich have bitCriteria at index
-        array = array.filter((value) => {
-            return value[index] == bitCriteria
-        })
-        // increase index
-        ++index
-        // keep going until array has only one entry
-        isNotFinished = array.length-1
-        // run function again
-        return filterByCriteria(array, bitCriteria, index, isNotFinished)
+function findScrubberRating() {
+    return findRatings(input, 0, "findLeastFrequent")
+}
+
+function findRatings(array, bitPos, frequencyFunction) {
+    console.log("current bitPos: ", bitPos)
+    console.log("current array: ")
+    console.table(array)
+    // transpose array to find most common bit and not exceed max bit position
+    let transposedArray = helper.transposeArray(array)
+    if (bitPos < transposedArray.length) {
+        let mostCommonBit = helper[frequencyFunction](transposedArray[bitPos])
+        if (mostCommonBit.length != 1) mostCommonBit = 1
+        return findOxyGenRating(array.filter((value) => value[bitPos] == mostCommonBit), ++bitPos)
     } else {
-        // return array with one entry
-        return array[0];
+        return parseInt(array[0].join(''), 2)
     }
 }
 
-// find most common value for each position
-function findCommonValues(array, findMostCommon) {
-    
-    // go through transposed array
-    helper.transposeArray(array).forEach((subArray) => {
-        // count 0s and 1s
-        var falseCount = 0;
-        var trueCount = 0;
-        subArray.forEach((value) => {
-            if (Number(value)) ++trueCount;
-            else ++falseCount;
-        })
-        // push most common bit at current position 
-        mostCommonValue.push((+ (trueCount >= falseCount)).toString())
-        leastCommonValue.push((+ !(trueCount >= falseCount)).toString())
-    })
-}
-
+console.log(findOxyGenRating())
+//console.log(helper.findMostFrequent("010001010101"))
 //console.log(input)
-console.log(oxyGenRating)
-console.log(scrubberRating)
 //console.log(filterByCriteria(input, "0", 0, 1))
