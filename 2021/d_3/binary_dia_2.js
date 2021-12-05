@@ -6,29 +6,23 @@ var input = helper.inputToStringArray("./input.txt").map((value) => { return val
 //var scrubberRating = findRatings(leastCommonValue)
 
 function findOxyGenRating() {
-    return findRatings(input, 0, "findMostFrequent")
+    return findRatings(input, 0, "findMostFrequent", 1)
 }
 
 function findScrubberRating() {
-    return findRatings(input, 0, "findLeastFrequent")
+    return findRatings(input, 0, "findLeastFrequent", 0)
 }
 
-function findRatings(array, bitPos, frequencyFunction) {
-    console.log("current bitPos: ", bitPos)
-    console.log("current array: ")
-    console.table(array)
+function findRatings(array, bitPos, frequencyFunction, defaultCommonBit) {
     // transpose array to find most common bit and not exceed max bit position
     let transposedArray = helper.transposeArray(array)
     if (bitPos < transposedArray.length) {
         let mostCommonBit = helper[frequencyFunction](transposedArray[bitPos])
-        if (mostCommonBit.length != 1) mostCommonBit = 1
-        return findOxyGenRating(array.filter((value) => value[bitPos] == mostCommonBit), ++bitPos)
+        if (mostCommonBit.length != 1) mostCommonBit = defaultCommonBit
+        return findRatings(array.filter((value) => value[bitPos] == mostCommonBit), ++bitPos, frequencyFunction, defaultCommonBit)
     } else {
         return parseInt(array[0].join(''), 2)
     }
 }
 
-console.log(findOxyGenRating())
-//console.log(helper.findMostFrequent("010001010101"))
-//console.log(input)
-//console.log(filterByCriteria(input, "0", 0, 1))
+console.log("Life Support Rating: ", findOxyGenRating() * findScrubberRating())
